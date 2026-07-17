@@ -1,0 +1,333 @@
+spring:
+  application:
+    name: tradesphere-ai
+
+  profiles:
+    active: dev
+
+  # Spring AI Configuration
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:sk-your-api-key-here}
+      chat:
+        enabled: true
+        options:
+          model: gpt-4-turbo
+          temperature: 0.1
+          max-tokens: 2000
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tradesphere_platform
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: tradesphere-ai
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "com.tradesphere.ai.*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 60000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+  cache:
+    type: none  # Disable Redis for local development without Docker
+    # type: redis
+    redis:
+      time-to-live: 600000  # 10 minutes
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: gpt-4-turbo
+          temperature: 0.1
+          max-tokens: 4000
+    anthropic:
+      api-key: ${ANTHROPIC_API_KEY:}
+      chat:
+        options:
+          model: claude-3-opus-20240229
+          temperature: 0.1
+    mistralai:
+      api-key: ${MISTRAL_API_KEY:}
+      chat:
+        options:
+          model: mistral-large-latest
+          temperature: 0.1
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
+    default-property-inclusion: non_null
+
+# Server Configuration
+server:
+  port: 8080
+  compression:
+    enabled: true
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Management & Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.tradesphere.ai: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# SpringDoc OpenAPI
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  show-actuator: true
+
+# Application Custom Configuration
+tradesphere:
+  # Tenant Configuration
+  tenant:
+    default-id: ${DEFAULT_TENANT_ID:00000000-0000-0000-0000-000000000001}
+
+  # Security Configuration
+  security:
+    jwt:
+      secret: ${JWT_SECRET:tradesphere-jwt-secret-key-must-be-at-least-256-bits-long-for-HS256-algorithm}
+      expiration: 86400000  # 24 hours in milliseconds
+      refresh-expiration: 604800000  # 7 days
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4200}
+      allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+
+  # Storage Configuration (MinIO/S3)
+  storage:
+    provider: minio  # minio, s3, azure
+    minio:
+      endpoint: http://localhost:9000
+      access-key: tradesphere
+      secret-key: tradesphere_dev_2026
+      bucket-name: tradesphere-documents
+    s3:
+      region: us-east-1
+      bucket-name: tradesphere-documents
+
+  # AI Configuration
+  ai:
+    enabled: true
+    default-model: gpt-4-turbo
+    max-retries: 3
+    timeout: 60000  # 60 seconds
+
+  # Feature Flags
+  features:
+    document-ai-enabled: true
+    compliance-screening-enabled: true
+    risk-assessment-enabled: true
+    workflow-engine-enabled: true
+    analytics-enabled: true
+
+  # Document Extraction Configuration
+  document:
+    extraction:
+      ocr:
+        enabled: true
+        tessdata-path: /usr/share/tesseract-ocr/tessdata
+        language: eng
+        additional-languages: ""
+        page-segmentation-mode: 3
+        engine-mode: 1
+        preprocessing-enabled: true
+        min-confidence: 0.7
+      ai:
+        enabled: true
+        provider: openai
+        model: gpt-4-vision-preview
+        api-key: ${OPENAI_API_KEY:}
+        api-url: https://api.openai.com/v1
+        timeout-seconds: 60
+        max-retries: 3
+        temperature: 0.1
+        max-tokens: 2000
+      quality:
+        enabled: true
+        min-auto-approval-score: 0.85
+        min-acceptable-score: 0.5
+        auto-validation: true
+        consistency-checks: true
+      performance:
+        parallel-processing: true
+        max-threads: 4
+        cache-enabled: true
+        cache-ttl-minutes: 60
+        max-document-size-mb: 50
+        extraction-timeout-seconds: 300
+
+  # Business Rules
+  business:
+    lc:
+      max-amount: 10000000  # $10M
+      default-currency: USD
+      default-presentation-days: 21
+    kyc:
+      expiry-months: 12
+      required-documents:
+        - TRADE_LICENSE
+        - BOARD_RESOLUTION
+        - PASSPORT
+        - UTILITY_BILL
+
+  # Integration Configuration
+  integration:
+    swift:
+      enabled: false
+      endpoint: ${SWIFT_ENDPOINT:}
+      credentials: ${SWIFT_CREDENTIALS:}
+    erp:
+      enabled: false
+    core-banking:
+      enabled: false
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.tradesphere.ai: DEBUG
+    org.springframework.web: DEBUG
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tradesphere_test
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    com.tradesphere.ai: INFO
+  file:
+    name: /var/log/tradesphere/application.log
+
+tradesphere:
+  ai:
+    enabled: true
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+
