@@ -13,8 +13,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * DocumentaryCollectionJpaEntity
+ * Responsibility: JPA persistence representation of DocumentaryCollection aggregate
+ *
+ * This is a persistence model, not a domain model. It's optimized for database storage.
+ */
 @Entity
-@Table(name = "documentary_collections", schema = "collection")
+@Table(name = "documentary_collections")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

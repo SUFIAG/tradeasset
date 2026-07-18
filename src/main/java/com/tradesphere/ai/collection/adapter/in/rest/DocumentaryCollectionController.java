@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 public class DocumentaryCollectionController {
 
     private final DocumentaryCollectionService service;
+    private final DocumentaryCollectionDtoMapper dtoMapper;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('DC_CREATOR', 'TRADE_FINANCE_OFFICER')")
@@ -55,7 +56,7 @@ public class DocumentaryCollectionController {
             userId
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(collection));
+        return ResponseEntity.status(HttpStatus.CREATED).body(dtoMapper.toResponse(collection));
     }
 
     @GetMapping("/{id}")
@@ -66,7 +67,7 @@ public class DocumentaryCollectionController {
             @RequestHeader("X-Tenant-ID") String tenantId
     ) {
         DocumentaryCollection collection = service.getCollection(id, tenantId);
-        return ResponseEntity.ok(toResponse(collection));
+        return ResponseEntity.ok(dtoMapper.toResponse(collection));
     }
 
     @GetMapping
@@ -76,7 +77,7 @@ public class DocumentaryCollectionController {
             @RequestHeader("X-Tenant-ID") String tenantId
     ) {
         List<CollectionResponse> collections = service.listCollections(tenantId).stream()
-            .map(this::toResponse)
+            .map(dtoMapper::toResponse)
             .collect(Collectors.toList());
         return ResponseEntity.ok(collections);
     }
@@ -130,26 +131,6 @@ public class DocumentaryCollectionController {
         return ResponseEntity.ok().build();
     }
 
-    private CollectionResponse toResponse(DocumentaryCollection collection) {
-        return CollectionResponse.builder()
-            .id(collection.getId())
-            .tenantId(collection.getTenantId())
-            .collectionNumber(collection.getCollectionNumber())
-            .referenceNumber(collection.getReferenceNumber())
-            .drawerId(collection.getDrawerId())
-            .draweeId(collection.getDraweeId())
-            .collectionType(collection.getCollectionType())
-            .amount(collection.getAmount())
-            .currency(collection.getCurrency())
-            .paymentTerms(collection.getPaymentTerms())
-            .status(collection.getStatus())
-            .collectionDate(collection.getCollectionDate())
-            .presentationDate(collection.getPresentationDate())
-            .paymentDueDate(collection.getPaymentDueDate())
-            .amountReceived(collection.getAmountReceived())
-            .outstandingAmount(collection.getOutstandingAmount())
-            .build();
-    }
 
     @Data
     @Builder

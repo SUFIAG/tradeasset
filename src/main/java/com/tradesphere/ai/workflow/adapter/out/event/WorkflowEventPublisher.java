@@ -4,6 +4,7 @@ import com.tradesphere.ai.shared.domain.DomainEvent;
 import com.tradesphere.ai.workflow.application.port.out.PublishWorkflowEventPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
  * Kafka adapter for publishing workflow events
  */
 @Component
+@ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true", matchIfMissing = false)
 @RequiredArgsConstructor
 @Slf4j
 public class WorkflowEventPublisher implements PublishWorkflowEventPort {

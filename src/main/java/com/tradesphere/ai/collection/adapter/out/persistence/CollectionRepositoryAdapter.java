@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * Adapter implementing CollectionRepository port
+ * Responsibility: Translate between domain objects and JPA persistence
  */
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 public class CollectionRepositoryAdapter implements CollectionRepository {
 
     private final DocumentaryCollectionJpaRepository jpaRepository;
-    private final CollectionMapper mapper;
+    private final DocumentaryCollectionReflectionMapper mapper;
 
     @Override
     @Transactional
@@ -46,7 +47,7 @@ public class CollectionRepositoryAdapter implements CollectionRepository {
     @Transactional(readOnly = true)
     public Optional<DocumentaryCollection> findByReference(String collectionRef, UUID tenantId) {
         log.debug("Finding collection by reference: {} for tenant: {}", collectionRef, tenantId);
-        return jpaRepository.findByCollectionRefAndTenantId(collectionRef, tenantId)
+        return jpaRepository.findByReferenceNumberAndTenantId(collectionRef, tenantId.toString())
                 .map(mapper::toDomain);
     }
 
@@ -54,7 +55,7 @@ public class CollectionRepositoryAdapter implements CollectionRepository {
     @Transactional(readOnly = true)
     public List<DocumentaryCollection> findByExporter(UUID exporterId, UUID tenantId) {
         log.debug("Finding collections by exporter: {} for tenant: {}", exporterId, tenantId);
-        return jpaRepository.findByExporterIdAndTenantId(exporterId, tenantId)
+        return jpaRepository.findByDrawerIdAndTenantId(exporterId, tenantId.toString())
                 .stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
@@ -64,7 +65,7 @@ public class CollectionRepositoryAdapter implements CollectionRepository {
     @Transactional(readOnly = true)
     public List<DocumentaryCollection> findByImporter(UUID importerId, UUID tenantId) {
         log.debug("Finding collections by importer: {} for tenant: {}", importerId, tenantId);
-        return jpaRepository.findByImporterIdAndTenantId(importerId, tenantId)
+        return jpaRepository.findByDraweeIdAndTenantId(importerId, tenantId.toString())
                 .stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
@@ -74,7 +75,7 @@ public class CollectionRepositoryAdapter implements CollectionRepository {
     @Transactional(readOnly = true)
     public List<DocumentaryCollection> findByStatus(CollectionStatus status, UUID tenantId) {
         log.debug("Finding collections by status: {} for tenant: {}", status, tenantId);
-        return jpaRepository.findByStatusAndTenantId(status, tenantId)
+        return jpaRepository.findByStatusAndTenantId(status, tenantId.toString())
                 .stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
@@ -84,7 +85,7 @@ public class CollectionRepositoryAdapter implements CollectionRepository {
     @Transactional(readOnly = true)
     public List<DocumentaryCollection> findByTenant(UUID tenantId) {
         log.debug("Finding all collections for tenant: {}", tenantId);
-        return jpaRepository.findByTenantId(tenantId)
+        return jpaRepository.findByTenantId(tenantId.toString())
                 .stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());

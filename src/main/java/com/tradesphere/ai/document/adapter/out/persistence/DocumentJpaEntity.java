@@ -16,7 +16,7 @@ import java.util.UUID;
  * Optimized for high-performance queries with proper indexing
  */
 @Entity
-@Table(name = "documents", schema = "document", indexes = {
+@Table(name = "documents", indexes = {
     @Index(name = "idx_document_tenant", columnList = "tenant_id"),
     @Index(name = "idx_document_status", columnList = "status"),
     @Index(name = "idx_document_storage_key", columnList = "storage_key"),

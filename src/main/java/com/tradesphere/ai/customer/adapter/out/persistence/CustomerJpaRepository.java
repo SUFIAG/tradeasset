@@ -25,6 +25,8 @@ public interface CustomerJpaRepository extends JpaRepository<CustomerJpaEntity, 
 
     Optional<CustomerJpaEntity> findByCustomerNumber(String customerNumber);
     
+    boolean existsByIdAndTenantId(UUID id, UUID tenantId);
+
     boolean existsByEmailAndTenantId(String email, UUID tenantId);
 
     boolean existsByEmail(String email);

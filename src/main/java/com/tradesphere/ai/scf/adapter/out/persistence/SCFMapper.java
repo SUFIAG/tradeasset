@@ -78,7 +78,7 @@ public class SCFMapper {
         entity.setUpdatedAt(domain.getUpdatedAt() != null ?
             java.time.LocalDateTime.ofInstant(domain.getUpdatedAt(), java.time.ZoneId.systemDefault()) : null);
         entity.setUpdatedBy(domain.getUpdatedBy() != null ? domain.getUpdatedBy().toString() : null);
-        entity.setVersion(domain.getVersion());
+        entity.setVersion(domain.getVersion() != null ? domain.getVersion().intValue() : 0);
 
         return entity;
     }

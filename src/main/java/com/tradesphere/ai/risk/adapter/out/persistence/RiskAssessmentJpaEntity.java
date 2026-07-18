@@ -15,7 +15,7 @@ import java.util.UUID;
  * JPA entity for risk assessments
  */
 @Entity
-@Table(name = "risk_assessments", schema = "risk", indexes = {
+@Table(name = "risk_assessments", indexes = {
         @Index(name = "idx_risk_tenant", columnList = "tenant_id"),
         @Index(name = "idx_risk_entity", columnList = "entity_type, entity_id"),
         @Index(name = "idx_risk_status", columnList = "status, tenant_id"),

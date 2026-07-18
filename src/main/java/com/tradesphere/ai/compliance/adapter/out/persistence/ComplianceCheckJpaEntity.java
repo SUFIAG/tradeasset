@@ -15,7 +15,7 @@ import java.util.UUID;
  * JPA entity for compliance checks
  */
 @Entity
-@Table(name = "compliance_checks", schema = "compliance", indexes = {
+@Table(name = "compliance_checks", indexes = {
         @Index(name = "idx_compliance_tenant", columnList = "tenant_id"),
         @Index(name = "idx_compliance_entity", columnList = "entity_type, entity_id"),
         @Index(name = "idx_compliance_status", columnList = "status, tenant_id"),

@@ -52,8 +52,8 @@ public class CopilotAgentService {
             };
             
             // Update conversation memory
-            conversationMemory.addMessage(sessionId, message, response.message());
-            
+            conversationMemory.addMessage(sessionId, message, response.getMessage());
+
             return response;
             
         } catch (Exception e) {

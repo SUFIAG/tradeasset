@@ -1,13 +1,14 @@
 package com.tradesphere.ai.integration.domain.model;
 
+import java.time.LocalDateTime;
+
 /**
- * SWIFT Message Status Enum
+ * SWIFT Message Status
  */
-public enum SwiftMessageStatus {
-    PENDING,
-    SENT,
-    ACKNOWLEDGED,
-    REJECTED,
-    FAILED
-}
+public record SwiftMessageStatus(
+    String messageId,
+    String status,
+    LocalDateTime timestamp,
+    String statusDetails
+) {}
 

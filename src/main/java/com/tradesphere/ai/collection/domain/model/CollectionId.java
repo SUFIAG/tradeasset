@@ -2,6 +2,10 @@ package com.tradesphere.ai.collection.domain.model;
 
 import java.util.UUID;
 
+/**
+ * CollectionId Value Object
+ * Responsibility: Uniquely identify a DocumentaryCollection aggregate
+ */
 public record CollectionId(UUID value) {
     public static CollectionId of(UUID value) {
         return new CollectionId(value);

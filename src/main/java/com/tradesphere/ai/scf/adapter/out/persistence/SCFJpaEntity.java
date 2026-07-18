@@ -16,7 +16,7 @@ import java.util.UUID;
  * JPA Entity for Supply Chain Finance
  */
 @Entity
-@Table(name = "scf_facilities", schema = "scf")
+@Table(name = "scf_facilities")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

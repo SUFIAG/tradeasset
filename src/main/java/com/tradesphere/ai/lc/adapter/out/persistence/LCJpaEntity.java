@@ -18,7 +18,7 @@ import java.util.UUID;
  * JPA Entity for Letter of Credit persistence
  */
 @Entity
-@Table(name = "letters_of_credit", schema = "trade")
+@Table(name = "letters_of_credit")
 @EntityListeners(TenantEntityListener.class)
 @Data
 @NoArgsConstructor

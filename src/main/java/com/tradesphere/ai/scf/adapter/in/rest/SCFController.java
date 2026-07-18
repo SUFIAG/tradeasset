@@ -27,6 +27,8 @@ public class SCFController {
     private final DisburseSCFUseCase disburseSCFUseCase;
     private final RepaySCFUseCase repaySCFUseCase;
     private final GetSCFUseCase getSCFUseCase;
+    private final AcceptEarlyPaymentUseCase acceptEarlyPaymentUseCase;
+    private final BatchSCFUseCase batchSCFUseCase;
 
     /**
      * Create new SCF transaction

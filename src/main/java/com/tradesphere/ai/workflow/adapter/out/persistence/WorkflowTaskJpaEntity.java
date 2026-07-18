@@ -12,7 +12,7 @@ import java.util.UUID;
  * JPA entity for workflow tasks
  */
 @Entity
-@Table(name = "workflow_tasks", schema = "workflow")
+@Table(name = "workflow_tasks")
 @Data
 public class WorkflowTaskJpaEntity {
 

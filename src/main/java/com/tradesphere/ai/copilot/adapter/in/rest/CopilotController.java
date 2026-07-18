@@ -14,9 +14,10 @@ import java.util.UUID;
 
 /**
  * REST Controller for Copilot Agent - NLP Interface
+ * TODO: Enable when service implementation is complete
  */
-@RestController
-@RequestMapping("/api/v1/copilot")
+//@RestController
+//@RequestMapping("/api/v1/copilot")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Copilot Agent", description = "AI-powered conversational interface")
@@ -53,7 +54,7 @@ public class CopilotController {
 
         SendMessageCommand command = SendMessageCommand.builder()
                 .sessionId(sessionId)
-                .message(request.getMessage())
+                .message(request.message())
                 .userId(userId)
                 .tenantId(tenantId)
                 .build();

@@ -15,7 +15,7 @@ import java.util.UUID;
  * Maps domain Customer aggregate to database table
  */
 @Entity
-@Table(name = "customers", schema = "customer")
+@Table(name = "customers")
 @EntityListeners(TenantEntityListener.class)
 @Getter
 @Setter

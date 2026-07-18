@@ -286,7 +286,9 @@ public class BankGuaranteeController {
             .claimCurrency(request.getClaimCurrency())
             .claimReason(request.getClaimReason())
             .claimType(request.getClaimType())
-            .supportingDocuments(request.getSupportingDocuments())
+            .supportingDocuments(request.getSupportingDocuments() != null ?
+                request.getSupportingDocuments().stream().map(UUID::fromString).collect(java.util.stream.Collectors.toList()) :
+                List.of())
             .build();
 
         UUID claimId = processClaimUseCase.registerClaim(command);

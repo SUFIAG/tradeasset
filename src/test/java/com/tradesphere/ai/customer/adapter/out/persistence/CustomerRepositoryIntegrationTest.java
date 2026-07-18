@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -163,8 +164,8 @@ class CustomerRepositoryIntegrationTest {
         entity.setKycStatus(KYCStatus.PENDING);
         entity.setComplianceStatus(ComplianceStatus.PENDING);
         entity.setRiskRating(RiskRating.NOT_ASSESSED);
-        entity.setRiskScore(0);
-        entity.setPoliticallyExposed(false);
+        entity.setRiskScore(BigDecimal.ZERO);
+        entity.setPepStatus(false);
         entity.setSanctionsHit(false);
         entity.setHighRiskCountry(false);
         return entity;

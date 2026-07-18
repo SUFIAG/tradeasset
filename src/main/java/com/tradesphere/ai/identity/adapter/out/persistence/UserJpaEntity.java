@@ -16,7 +16,7 @@ import java.util.UUID;
  * JPA Entity for User persistence
  */
 @Entity
-@Table(name = "users", schema = "identity")
+@Table(name = "users")
 @Data
 @Builder
 @NoArgsConstructor

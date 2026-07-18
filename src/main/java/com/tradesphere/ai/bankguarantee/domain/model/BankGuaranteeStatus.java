@@ -8,8 +8,10 @@ public enum BankGuaranteeStatus {
     DRAFT,              // Initial state
     PENDING_APPROVAL,   // Submitted for approval
     APPROVED,           // Approved but not yet issued
+    REJECTED,           // Rejected during approval
     ACTIVE,             // Issued and active
     CLAIMED,            // Claim has been made
+    SETTLED,            // Claim settled/paid
     EXPIRED,            // Validity period ended
     CANCELLED,          // Cancelled before expiry
     INVOKED,            // Claim paid out

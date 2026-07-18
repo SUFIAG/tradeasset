@@ -25,7 +25,7 @@ import java.util.UUID;
  * - Financial Guarantee
  */
 @Getter
-@Setter(AccessLevel.PRIVATE)
+@Setter
 public class BankGuarantee extends AggregateRoot<BankGuaranteeId> {
 
     // Basic Information
@@ -111,13 +111,22 @@ public class BankGuarantee extends AggregateRoot<BankGuaranteeId> {
     private UUID lastModifiedBy;
     private LocalDateTime lastModifiedAt;
     
-    private BankGuarantee(BankGuaranteeId id) {
+    // Package-private constructor for mapper
+    BankGuarantee(BankGuaranteeId id) {
         super(id);
         this.claims = new ArrayList<>();
         this.attachedDocuments = new ArrayList<>();
         this.requiredDocuments = new ArrayList<>();
     }
-    
+
+    // No-arg constructor for JPA/Mapper (public for reflection-based mapper)
+    public BankGuarantee() {
+        super(null);
+        this.claims = new ArrayList<>();
+        this.attachedDocuments = new ArrayList<>();
+        this.requiredDocuments = new ArrayList<>();
+    }
+
     /**
      * Create new bank guarantee
      */

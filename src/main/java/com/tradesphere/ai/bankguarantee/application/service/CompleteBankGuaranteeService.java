@@ -42,29 +42,37 @@ public class CompleteBankGuaranteeService implements
     public BankGuaranteeResponse execute(CreateBankGuaranteeCommand command) {
         log.info("Creating bank guarantee: type={}, amount={}", command.getBgType(), command.getAmount());
 
+        // Map BGType to BankGuaranteeType
+        com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType bgType =
+            mapBGTypeToBankGuaranteeType(command.getBgType());
+
         BankGuarantee bg = BankGuarantee.create(
-            command.getTenantId(),
-            command.getReferenceNumber(),
+            UUID.fromString(command.getTenantId()),
+            bgType,
             command.getApplicantId(),
-            command.getBeneficiaryId(),
-            command.getBgType(),
+            "Applicant",
+            "Beneficiary",
             command.getAmount(),
             command.getCurrency(),
-            command.getExpiryDate(),
-            command.getPurpose()
+            command.getExpiryDate() != null ? command.getExpiryDate().toLocalDate() : null,
+            command.getPurpose(),
+            UUID.fromString(command.getUserId())
         );
 
         if (command.getGoverningLaw() != null) {
-            bg.updateDetails(command.getPurpose(), command.getGoverningLaw(),
-                command.getJurisdiction(), null, command.getSpecialConditions(), command.getUserId());
+            bg.updateDetails(command.getPurpose(), null, command.getGoverningLaw(),
+                command.getJurisdiction(), null, command.getSpecialConditions());
         }
 
         if (command.getRequiredDocuments() != null) {
             command.getRequiredDocuments().forEach(bg::addRequiredDocument);
         }
 
-        bg.setReductionTerms(command.isReductionAllowed(), null);
-        bg.setExtensionTerms(command.isExtensionAllowed(), null);
+        bg.setReductionAllowed(command.isReductionAllowed());
+        bg.setExtensionAllowed(command.isExtensionAllowed());
+        bg.setBgType(command.getBgType());
+        bg.setReferenceNumber(command.getReferenceNumber());
+        bg.setBeneficiaryId(command.getBeneficiaryId());
 
         BankGuarantee saved = repository.save(bg);
         log.info("Bank guarantee created: id={}", saved.getId());
@@ -117,7 +125,7 @@ public class CompleteBankGuaranteeService implements
         BankGuarantee bg = repository.findById(command.getBgId(), command.getTenantId())
             .orElseThrow(() -> new RuntimeException("Bank guarantee not found"));
 
-        bg.submit(command.getUserId());
+        bg.submit();
         repository.save(bg);
     }
 
@@ -127,7 +135,7 @@ public class CompleteBankGuaranteeService implements
         BankGuarantee bg = repository.findById(command.getBgId(), command.getTenantId())
             .orElseThrow(() -> new RuntimeException("Bank guarantee not found"));
 
-        bg.approve(command.getApproverId());
+        bg.approve(UUID.fromString(command.getApproverId()));
         repository.save(bg);
     }
 
@@ -137,7 +145,7 @@ public class CompleteBankGuaranteeService implements
         BankGuarantee bg = repository.findById(command.getBgId(), command.getTenantId())
             .orElseThrow(() -> new RuntimeException("Bank guarantee not found"));
 
-        bg.reject(command.getApproverId(), command.getReason());
+        bg.reject(command.getReason(), command.getApproverId() != null ? command.getApproverId().toString() : "SYSTEM");
         repository.save(bg);
     }
 
@@ -147,10 +155,9 @@ public class CompleteBankGuaranteeService implements
         BankGuarantee bg = repository.findById(command.getBgId(), command.getTenantId())
             .orElseThrow(() -> new RuntimeException("Bank guarantee not found"));
 
-        bg.issue(command.getIssuerId());
-        if (command.getIssuingBank() != null) {
-            bg.setIssuingBank(command.getIssuingBank());
-        }
+        bg.issue(java.time.LocalDate.now(),
+            command.getIssuingBank() != null ? command.getIssuingBank() : "Issuing Bank");
+
         if (command.getAdvisingBank() != null) {
             bg.setAdvisingBank(command.getAdvisingBank());
         }
@@ -215,7 +222,7 @@ public class CompleteBankGuaranteeService implements
         BankGuarantee bg = repository.findById(command.getBgId(), command.getTenantId())
             .orElseThrow(() -> new RuntimeException("Bank guarantee not found"));
 
-        bg.cancel(command.getUserId(), command.getReason());
+        bg.cancel(command.getReason(), UUID.fromString(command.getUserId()));
         repository.save(bg);
     }
 
@@ -225,7 +232,7 @@ public class CompleteBankGuaranteeService implements
         BankGuarantee bg = repository.findById(command.getBgId(), command.getTenantId())
             .orElseThrow(() -> new RuntimeException("Bank guarantee not found"));
 
-        bg.release(command.getUserId());
+        bg.release("Released by user");
         repository.save(bg);
     }
 
@@ -255,8 +262,8 @@ public class CompleteBankGuaranteeService implements
 
     private BankGuaranteeResponse toResponse(BankGuarantee bg) {
         return BankGuaranteeResponse.builder()
-            .id(bg.getId())
-            .tenantId(bg.getTenantId())
+            .id(bg.getId() != null ? bg.getId().getValue() : null)
+            .tenantId(bg.getTenantId() != null ? bg.getTenantId().toString() : null)
             .bgNumber(bg.getBgNumber())
             .referenceNumber(bg.getReferenceNumber())
             .applicantId(bg.getApplicantId())
@@ -266,16 +273,47 @@ public class CompleteBankGuaranteeService implements
             .amount(bg.getAmount())
             .currency(bg.getCurrency())
             .applicationDate(bg.getApplicationDate())
-            .issueDate(bg.getIssueDate())
-            .expiryDate(bg.getExpiryDate())
-            .status(bg.getStatus())
+            .issueDate(bg.getIssueDate() != null ? bg.getIssueDate().atStartOfDay() : null)
+            .expiryDate(bg.getExpiryDate() != null ? bg.getExpiryDate().atStartOfDay() : null)
+            .status(mapStatusToBGStatus(bg.getStatus()))
             .purpose(bg.getPurpose())
             .claimsCount(bg.getClaimsCount())
             .claimedAmount(bg.getClaimedAmount())
             .availableAmount(bg.getAvailableAmount())
             .requiredDocuments(bg.getRequiredDocuments())
-            .createdAt(bg.getCreatedAt())
+            .createdAt(bg.getCreatedAt() != null ? 
+                java.time.LocalDateTime.ofInstant(bg.getCreatedAt(), java.time.ZoneId.systemDefault()) : null)
             .build();
+    }
+    
+    private BGStatus mapStatusToBGStatus(com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeStatus status) {
+        if (status == null) return null;
+        return switch (status) {
+            case DRAFT -> BGStatus.DRAFT;
+            case PENDING_APPROVAL -> BGStatus.UNDER_REVIEW;
+            case APPROVED -> BGStatus.APPROVED;
+            case REJECTED -> BGStatus.REJECTED;
+            case ACTIVE -> BGStatus.ACTIVE;
+            case CLAIMED -> BGStatus.CLAIMED;
+            case SETTLED -> BGStatus.FULLY_PAID;
+            case EXPIRED -> BGStatus.EXPIRED;
+            case CANCELLED -> BGStatus.CANCELLED;
+            case INVOKED -> BGStatus.FULLY_PAID;
+            case RELEASED -> BGStatus.RELEASED;
+        };
+    }
+
+    private com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType mapBGTypeToBankGuaranteeType(BGType bgType) {
+        if (bgType == null) return null;
+        return switch (bgType) {
+            case BID_BOND -> com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType.BID_BOND;
+            case PERFORMANCE -> com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType.PERFORMANCE;
+            case ADVANCE_PAYMENT -> com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType.ADVANCE_PAYMENT;
+            case RETENTION -> com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType.RETENTION;
+            case PAYMENT -> com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType.PAYMENT;
+            case FINANCIAL -> com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType.FINANCIAL;
+            default -> com.tradesphere.ai.bankguarantee.domain.model.BankGuaranteeType.FINANCIAL;
+        };
     }
 }
 

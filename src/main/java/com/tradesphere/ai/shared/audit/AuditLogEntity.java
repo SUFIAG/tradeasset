@@ -16,7 +16,7 @@ import java.util.UUID;
  * Optimized for write-heavy workload with minimal indexes
  */
 @Entity
-@Table(name = "audit_logs", schema = "audit", indexes = {
+@Table(name = "audit_logs", indexes = {
     @Index(name = "idx_audit_tenant_timestamp", columnList = "tenant_id, timestamp"),
     @Index(name = "idx_audit_entity", columnList = "entity_type, entity_id"),
     @Index(name = "idx_audit_user", columnList = "user_id, timestamp"),

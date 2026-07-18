@@ -14,7 +14,7 @@ import java.util.UUID;
  * JPA Entity for Permission persistence
  */
 @Entity
-@Table(name = "permissions", schema = "identity")
+@Table(name = "permissions")
 @Data
 @Builder
 @NoArgsConstructor

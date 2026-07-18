@@ -11,19 +11,19 @@ import java.util.UUID;
 @Repository
 public interface DocumentaryCollectionJpaRepository extends JpaRepository<DocumentaryCollectionJpaEntity, UUID> {
     
-    Optional<DocumentaryCollectionJpaEntity> findByIdAndTenantId(UUID id, UUID tenantId);
+    Optional<DocumentaryCollectionJpaEntity> findByIdAndTenantId(UUID id, String tenantId);
 
-    Optional<DocumentaryCollectionJpaEntity> findByCollectionRefAndTenantId(String collectionRef, UUID tenantId);
+    Optional<DocumentaryCollectionJpaEntity> findByReferenceNumberAndTenantId(String referenceNumber, String tenantId);
 
-    List<DocumentaryCollectionJpaEntity> findByTenantId(UUID tenantId);
+    List<DocumentaryCollectionJpaEntity> findByTenantId(String tenantId);
 
-    List<DocumentaryCollectionJpaEntity> findByTenantIdOrderByCreatedAtDesc(UUID tenantId);
+    List<DocumentaryCollectionJpaEntity> findByTenantIdOrderByCreatedAtDesc(String tenantId);
 
-    List<DocumentaryCollectionJpaEntity> findByStatusAndTenantId(CollectionStatus status, UUID tenantId);
+    List<DocumentaryCollectionJpaEntity> findByStatusAndTenantId(CollectionStatus status, String tenantId);
 
-    List<DocumentaryCollectionJpaEntity> findByExporterIdAndTenantId(UUID exporterId, UUID tenantId);
+    List<DocumentaryCollectionJpaEntity> findByDrawerIdAndTenantId(UUID drawerId, String tenantId);
 
-    List<DocumentaryCollectionJpaEntity> findByImporterIdAndTenantId(UUID importerId, UUID tenantId);
+    List<DocumentaryCollectionJpaEntity> findByDraweeIdAndTenantId(UUID draweeId, String tenantId);
 }
 
 

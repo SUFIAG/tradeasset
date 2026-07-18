@@ -1,7 +1,6 @@
 package com.tradesphere.ai.document.application.service.extraction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tradesphere.ai.document.config.ExtractionConfiguration;
 import com.tradesphere.ai.document.domain.model.DocumentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -31,16 +29,23 @@ class AIDocumentExtractionServiceTest {
     @Mock
     private ExtractionPromptFactory promptFactory;
 
-    private ObjectMapper objectMapper;
+    @Mock
+    private AIExtractionService aiExtractionService;
+
+    @Mock
+    private UniversalDocumentReader documentReader;
+
     private AIDocumentExtractionService extractionService;
 
     @BeforeEach
     void setUp() {
-        objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
         extractionService = new AIDocumentExtractionService(
             ocrService,
             promptFactory,
-            objectMapper
+            objectMapper,
+            aiExtractionService,
+            documentReader
         );
     }
 

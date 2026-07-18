@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "knowledge_documents", schema = "knowledge")
+@Table(name = "knowledge_documents")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

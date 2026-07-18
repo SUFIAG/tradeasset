@@ -14,14 +14,16 @@ import java.util.UUID;
 
 /**
  * Documentary Collection Aggregate Root
- * Manages documentary collections (D/P and D/A) lifecycle
+ * Responsibility: Manage documentary collections lifecycle and business rules
  *
- * Documentary Collection Types:
+ * Manages documentary collections (D/P and D/A) lifecycle:
  * - D/P (Documents against Payment) - Documents released only upon payment
  * - D/A (Documents against Acceptance) - Documents released upon acceptance of draft
+ *
+ * Enforces business invariants and state transitions
  */
 @Getter
-@Setter(AccessLevel.PRIVATE)
+@Setter
 public class DocumentaryCollection extends AggregateRoot<CollectionId> {
 
     // Basic Information
@@ -69,7 +71,9 @@ public class DocumentaryCollection extends AggregateRoot<CollectionId> {
 
     // Documents
     private List<ShippingDocument> documents;
+    private List<String> requiredDocuments;
     private boolean documentsReceived;
+    private boolean documentsComplete;
     private LocalDateTime documentsReceivedDate;
 
     // Dates
@@ -80,19 +84,38 @@ public class DocumentaryCollection extends AggregateRoot<CollectionId> {
 
     // Instructions
     private String collectionInstructions;
+    private String protestInstructions;
+    private String chargesInstructions;
     private boolean protestRequired;  // Protest if not paid/accepted
-    private String chargesInstruction;  // Who pays bank charges
+    private boolean protested;
+    private LocalDate protestDate;
+    private String protestReason;
+    private String chargesForAccount;  // Who pays charges
+    private BigDecimal bankCharges;
+    private BigDecimal collectionCharges;
 
     // Trade Details
     private String invoiceNumber;
+    private LocalDate invoiceDate;
     private String shipmentDetails;
     private String goodsDescription;
+
+    // Completion tracking
+    private LocalDateTime completedAt;
+    private UUID completedBy;
 
     // Workflow & Audit
     private UUID workflowId;
 
-    private DocumentaryCollection(CollectionId id) {
+    // Package-private constructor for mapper
+    DocumentaryCollection(CollectionId id) {
         super(id);
+        this.documents = new ArrayList<>();
+    }
+
+    // Public no-arg constructor for JPA/Mapper
+    public DocumentaryCollection() {
+        super(null);
         this.documents = new ArrayList<>();
     }
 

@@ -3,6 +3,7 @@ package com.tradesphere.ai.analytics.adapter.out.persistence;
 import com.tradesphere.ai.analytics.domain.model.ReportType;
 import com.tradesphere.ai.analytics.domain.model.ReportStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -80,6 +81,7 @@ public interface AnalyticsReportJpaRepository extends JpaRepository<AnalyticsRep
     /**
      * Delete expired cached reports (cleanup job)
      */
+    @Modifying
     @Query("DELETE FROM AnalyticsReportJpaEntity r WHERE r.cached = true " +
            "AND r.cacheExpiresAt < :now")
     void deleteExpiredCachedReports(@Param("now") Instant now);

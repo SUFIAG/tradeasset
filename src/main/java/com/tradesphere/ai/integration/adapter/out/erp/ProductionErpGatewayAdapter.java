@@ -3,6 +3,7 @@ import com.tradesphere.ai.integration.application.port.out.ErpGateway;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 @Component
+@ConditionalOnProperty(name = "integration.erp.mode", havingValue = "production")
 @RequiredArgsConstructor
 @Slf4j
 public class ProductionErpGatewayAdapter implements ErpGateway {

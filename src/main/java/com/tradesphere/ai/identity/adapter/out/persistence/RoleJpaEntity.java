@@ -16,7 +16,7 @@ import java.util.UUID;
  * JPA Entity for Role persistence
  */
 @Entity
-@Table(name = "roles", schema = "identity")
+@Table(name = "roles")
 @Data
 @Builder
 @NoArgsConstructor

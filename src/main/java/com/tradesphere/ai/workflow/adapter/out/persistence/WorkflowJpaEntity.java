@@ -14,7 +14,7 @@ import java.util.UUID;
  * JPA entity for workflows
  */
 @Entity
-@Table(name = "workflows", schema = "workflow", indexes = {
+@Table(name = "workflows", indexes = {
         @Index(name = "idx_workflow_tenant", columnList = "tenant_id"),
         @Index(name = "idx_workflow_entity", columnList = "entity_type, entity_id"),
         @Index(name = "idx_workflow_status", columnList = "status, tenant_id"),

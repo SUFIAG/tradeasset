@@ -17,7 +17,7 @@ import java.util.UUID;
  * JPA Entity for Bank Guarantee
  */
 @Entity
-@Table(name = "bank_guarantees", schema = "bankguarantee")
+@Table(name = "bank_guarantees")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

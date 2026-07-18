@@ -9,7 +9,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Port for Documentary Collection persistence
+ * CollectionRepository Port (Output Port)
+ * Responsibility: Define persistence operations for DocumentaryCollection aggregate
+ *
+ * This is a port in hexagonal architecture - defines what the application needs
+ * from persistence without coupling to implementation details
  */
 public interface CollectionRepository {
     DocumentaryCollection save(DocumentaryCollection collection);

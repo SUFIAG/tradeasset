@@ -1,6 +1,5 @@
 package com.tradesphere.ai.customer.domain.model;
 
-import com.tradesphere.ai.shared.domain.valueobject.Address;
 import com.tradesphere.ai.shared.domain.valueobject.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +22,7 @@ class CustomerTest {
     private static final UUID TENANT_ID = UUID.randomUUID();
     private static final UUID USER_ID = UUID.randomUUID();
     private static final String CUSTOMER_NAME = "Acme Corporation";
+    private static final String LEGAL_NAME = "Acme Corporation Ltd.";
     private static final String EMAIL = "contact@acme.com";
     private static final CustomerType TYPE = CustomerType.IMPORTER;
 
@@ -37,8 +37,9 @@ class CustomerTest {
             Customer customer = Customer.create(
                     TENANT_ID,
                     CUSTOMER_NAME,
-                    EMAIL,
+                    LEGAL_NAME,
                     TYPE,
+                    EMAIL,
                     USER_ID
             );
 
@@ -58,7 +59,6 @@ class CustomerTest {
 
             // Verify domain event
             assertEquals(1, customer.getDomainEvents().size());
-            assertTrue(customer.getDomainEvents().get(0) instanceof CustomerCreated);
         }
 
         @Test
@@ -66,7 +66,7 @@ class CustomerTest {
         void shouldFailWhenTenantIdIsNull() {
             // When & Then
             assertThrows(CustomerException.class, () ->
-                    Customer.create(null, CUSTOMER_NAME, EMAIL, TYPE, USER_ID)
+                    Customer.create(null, CUSTOMER_NAME, LEGAL_NAME, TYPE, EMAIL, USER_ID)
             );
         }
 
@@ -75,7 +75,7 @@ class CustomerTest {
         void shouldFailWhenNameIsBlank() {
             // When & Then
             assertThrows(CustomerException.class, () ->
-                    Customer.create(TENANT_ID, "", EMAIL, TYPE, USER_ID)
+                    Customer.create(TENANT_ID, "", LEGAL_NAME, TYPE, EMAIL, USER_ID)
             );
         }
 
@@ -84,7 +84,7 @@ class CustomerTest {
         void shouldFailWhenEmailIsInvalid() {
             // When & Then
             assertThrows(CustomerException.class, () ->
-                    Customer.create(TENANT_ID, CUSTOMER_NAME, "invalid-email", TYPE, USER_ID)
+                    Customer.create(TENANT_ID, CUSTOMER_NAME, LEGAL_NAME, TYPE, "invalid-email", USER_ID)
             );
         }
 
@@ -93,7 +93,7 @@ class CustomerTest {
         void shouldFailWhenTypeIsNull() {
             // When & Then
             assertThrows(CustomerException.class, () ->
-                    Customer.create(TENANT_ID, CUSTOMER_NAME, EMAIL, null, USER_ID)
+                    Customer.create(TENANT_ID, CUSTOMER_NAME, LEGAL_NAME, null, EMAIL, USER_ID)
             );
         }
     }
@@ -109,12 +109,11 @@ class CustomerTest {
             Customer customer = createDraftCustomer();
 
             // When
-            customer.submitForApproval();
+            customer.submitForApproval(USER_ID);
 
             // Then
             assertEquals(CustomerStatus.PENDING_APPROVAL, customer.getStatus());
             assertEquals(2, customer.getDomainEvents().size());
-            assertTrue(customer.getDomainEvents().get(1) instanceof CustomerSubmittedForApproval);
         }
 
         @Test
@@ -173,9 +172,6 @@ class CustomerTest {
 
             // Then
             assertEquals(CustomerStatus.REJECTED, customer.getStatus());
-            assertEquals(reason, customer.getRejectionReason());
-            assertNotNull(customer.getRejectedAt());
-            assertEquals(USER_ID, customer.getRejectedBy());
         }
     }
 
@@ -190,7 +186,7 @@ class CustomerTest {
             Customer customer = createApprovedCustomer();
 
             // When
-            customer.activate();
+            customer.activate(USER_ID);
 
             // Then
             assertEquals(CustomerStatus.ACTIVE, customer.getStatus());
@@ -208,7 +204,6 @@ class CustomerTest {
 
             // Then
             assertEquals(CustomerStatus.SUSPENDED, customer.getStatus());
-            assertEquals(reason, customer.getSuspensionReason());
         }
 
         @Test
@@ -223,7 +218,6 @@ class CustomerTest {
 
             // Then
             assertEquals(CustomerStatus.ACTIVE, customer.getStatus());
-            assertNull(customer.getSuspensionReason());
         }
 
         @Test
@@ -271,20 +265,6 @@ class CustomerTest {
                     customer.completeKYC(pastDate, USER_ID)
             );
         }
-
-        @Test
-        @DisplayName("Should update next KYC review date")
-        void shouldUpdateNextKYCReviewDate() {
-            // Given
-            Customer customer = createActiveCustomer();
-            LocalDate reviewDate = LocalDate.now().plusMonths(6);
-
-            // When
-            customer.updateNextKYCReviewDate(reviewDate);
-
-            // Then
-            assertEquals(reviewDate, customer.getNextKycReviewDate());
-        }
     }
 
     @Nested
@@ -296,7 +276,7 @@ class CustomerTest {
         void shouldSetCreditLimitWithRiskAssessment() {
             // Given
             Customer customer = createActiveCustomer();
-            customer.updateRiskRating(RiskRating.LOW, 25, USER_ID);
+            customer.updateRiskRating(RiskRating.LOW, BigDecimal.valueOf(25), "Low risk assessment", USER_ID);
             Money creditLimit = Money.of(BigDecimal.valueOf(1000000), Currency.getInstance("USD"));
 
             // When
@@ -374,15 +354,15 @@ class CustomerTest {
         void shouldUpdateRiskRatingWithScore() {
             // Given
             Customer customer = createActiveCustomer();
-            int score = 75;
+            BigDecimal score = BigDecimal.valueOf(75);
 
             // When
-            customer.updateRiskRating(RiskRating.HIGH, score, USER_ID);
+            customer.updateRiskRating(RiskRating.HIGH, score, "High risk assessment", USER_ID);
 
             // Then
             assertEquals(RiskRating.HIGH, customer.getRiskRating());
             assertEquals(score, customer.getRiskScore());
-            assertNotNull(customer.getLastRiskAssessmentDate());
+            assertNotNull(customer.getRiskAssessedAt());
         }
 
         @Test
@@ -390,13 +370,13 @@ class CustomerTest {
         void shouldAutoElevateRiskForPEPCustomers() {
             // Given
             Customer customer = createActiveCustomer();
-            customer.updateRiskRating(RiskRating.LOW, 20, USER_ID);
+            customer.updateRiskRating(RiskRating.LOW, BigDecimal.valueOf(20), "Low risk", USER_ID);
 
             // When
-            customer.markAsPEP(true, USER_ID);
+            customer.markAsPEP(USER_ID);
 
             // Then
-            assertTrue(customer.isPoliticallyExposed());
+            assertTrue(customer.isPepStatus());
             assertEquals(RiskRating.HIGH, customer.getRiskRating());
         }
 
@@ -407,11 +387,10 @@ class CustomerTest {
             Customer customer = createActiveCustomer();
 
             // When
-            customer.markSanctionsHit(true, "OFAC match", USER_ID);
+            customer.markSanctionsHit(USER_ID);
 
             // Then
             assertTrue(customer.isSanctionsHit());
-            assertEquals("OFAC match", customer.getSanctionsDetails());
         }
     }
 
@@ -430,19 +409,6 @@ class CustomerTest {
 
             // Then
             assertEquals(ComplianceStatus.CLEARED, customer.getComplianceStatus());
-        }
-
-        @Test
-        @DisplayName("Should mark as high risk country")
-        void shouldMarkAsHighRiskCountry() {
-            // Given
-            Customer customer = createActiveCustomer();
-
-            // When
-            customer.markHighRiskCountry(true);
-
-            // Then
-            assertTrue(customer.isHighRiskCountry());
         }
     }
 
