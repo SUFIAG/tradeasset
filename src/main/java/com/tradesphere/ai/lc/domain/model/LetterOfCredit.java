@@ -24,9 +24,12 @@ import java.util.UUID;
  * - LC can only be issued after approval
  * - Documents can only be reviewed after LC is issued
  * - Payment can only be made after documents are accepted or discrepancies waived
+ *
+ * Note: Setters are public to allow persistence adapter to reconstitute aggregates from database.
+ * In production code, these should only be used by the persistence layer during hydration.
  */
 @Getter
-@Setter(AccessLevel.PRIVATE)
+@Setter
 public class LetterOfCredit extends AggregateRoot<LCId> {
 
     // Basic Information
@@ -89,7 +92,6 @@ public class LetterOfCredit extends AggregateRoot<LCId> {
 
     // Special Instructions
     private String specialInstructions;
-    private String additionalConditions;
 
     // Workflow
     private UUID submittedBy;

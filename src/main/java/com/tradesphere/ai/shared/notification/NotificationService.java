@@ -41,6 +41,11 @@ public interface NotificationService {
     void markAsRead(UUID notificationId, UUID userId);
 
     /**
+     * Check whether notification is read by user
+     */
+    boolean isRead(UUID notificationId, UUID userId);
+
+    /**
      * Get unread count for user
      */
     int getUnreadCount(UUID userId);

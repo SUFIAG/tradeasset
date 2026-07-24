@@ -2,6 +2,9 @@ package com.tradesphere.ai.identity.adapter.in.web;
 
 import com.tradesphere.ai.identity.adapter.in.web.dto.*;
 import com.tradesphere.ai.identity.application.port.in.*;
+import com.tradesphere.ai.identity.application.port.out.LoadUserPort;
+import com.tradesphere.ai.identity.application.port.out.PasswordEncoderPort;
+import com.tradesphere.ai.identity.application.port.out.SaveUserPort;
 import com.tradesphere.ai.identity.application.service.CaptchaService;
 import com.tradesphere.ai.identity.application.service.DeviceRecognitionService;
 import com.tradesphere.ai.identity.domain.model.User;
@@ -33,6 +36,9 @@ public class AuthController {
     private final ResetPasswordUseCase resetPasswordUseCase;
     private final CaptchaService captchaService;
     private final DeviceRecognitionService deviceRecognitionService;
+    private final PasswordEncoderPort passwordEncoder;
+    private final LoadUserPort loadUserPort;
+    private final SaveUserPort saveUserPort;
 
     @PostMapping("/register")
     @Operation(summary = "Register new user", description = "Registers a new user in the system")
@@ -68,7 +74,7 @@ public class AuthController {
     @Operation(summary = "User login", description = "Authenticates user and returns JWT tokens")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
 
-        log.info("Login attempt for user: {}", request.getUsername());
+        log.info("Login attempt for user: {} with device: {}", request.getUsername(), request.getDeviceFingerprint());
 
         LoginCommand command = LoginCommand.builder()
                 .username(request.getUsername())
@@ -171,6 +177,128 @@ public class AuthController {
         );
 
         return ResponseEntity.ok().build();
+    }
+
+    // TEMPORARY - DEVELOPMENT ONLY - Remove in production
+    @GetMapping("/dev/hash-password")
+    @Operation(summary = "[DEV] Generate BCrypt hash", description = "Development endpoint to generate password hash")
+    public ResponseEntity<Map<String, String>> generatePasswordHash(
+            @RequestParam String password) {
+
+        log.warn("DEV ENDPOINT CALLED - Generating hash for password");
+
+        String hash = passwordEncoder.encode(password);
+        boolean matches = passwordEncoder.matches(password, hash);
+
+        return ResponseEntity.ok(Map.of(
+                "password", password,
+                "hash", hash,
+                "verification", String.valueOf(matches)
+        ));
+    }
+
+    // TEMPORARY - DEVELOPMENT ONLY - Debug login issue
+    @GetMapping("/dev/debug-user/{username}")
+    @Operation(summary = "[DEV] Debug user", description = "Development endpoint to debug user data")
+    public ResponseEntity<Map<String, Object>> debugUser(
+            @PathVariable String username,
+            @RequestParam(required = false) String testPassword) {
+
+        log.warn("DEV ENDPOINT CALLED - Debugging user: {}", username);
+
+        try {
+            var userOpt = loadUserPort.loadUserByUsername(username);
+
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.ok(Map.of(
+                        "found", false,
+                        "message", "User not found in database"
+                ));
+            }
+
+            var user = userOpt.get();
+            Map<String, Object> response = new java.util.HashMap<>();
+            response.put("found", true);
+            response.put("userId", user.getId().toString());
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            response.put("status", user.getStatus().toString());
+            response.put("isLocked", user.isLocked());
+            response.put("passwordHashPrefix", user.getPasswordHash().substring(0, Math.min(30, user.getPasswordHash().length())));
+            response.put("passwordHashLength", user.getPasswordHash().length());
+
+            if (testPassword != null && !testPassword.isEmpty()) {
+                boolean matches = passwordEncoder.matches(testPassword, user.getPasswordHash());
+                response.put("testPassword", testPassword);
+                response.put("passwordMatches", matches);
+
+                // Also test with fresh encoding
+                String freshHash = passwordEncoder.encode(testPassword);
+                response.put("freshHashGenerated", freshHash.substring(0, Math.min(30, freshHash.length())));
+                response.put("freshHashMatches", passwordEncoder.matches(testPassword, freshHash));
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of(
+                    "error", true,
+                    "message", e.getMessage(),
+                    "type", e.getClass().getSimpleName()
+            ));
+        }
+    }
+
+    // TEMPORARY - DEVELOPMENT ONLY - Fix admin password
+    @PostMapping("/dev/fix-admin-password")
+    @Operation(summary = "[DEV] Fix admin password", description = "Development endpoint to fix admin password hash")
+    public ResponseEntity<Map<String, Object>> fixAdminPassword() {
+        log.warn("DEV ENDPOINT CALLED - Fixing admin password");
+
+        try {
+            var userOpt = loadUserPort.loadUserByUsername("admin");
+
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.ok(Map.of(
+                        "success", false,
+                        "message", "Admin user not found"
+                ));
+            }
+
+            var user = userOpt.get();
+
+            // Set the correct BCrypt hash for "admin123"
+            String correctHash = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
+
+            // Use reflection to set the password hash (since User is likely immutable)
+            // Or better, create a new user instance with updated hash
+            var field = user.getClass().getDeclaredField("passwordHash");
+            field.setAccessible(true);
+            field.set(user, correctHash);
+
+            // Save the updated user
+            saveUserPort.saveUser(user);
+
+            // Verify it worked
+            var verifyUserOpt = loadUserPort.loadUserByUsername("admin");
+            var verifyUser = verifyUserOpt.get();
+            boolean matches = passwordEncoder.matches("admin123", verifyUser.getPasswordHash());
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Admin password hash updated",
+                    "passwordHashLength", verifyUser.getPasswordHash().length(),
+                    "passwordMatches", matches
+            ));
+
+        } catch (Exception e) {
+            log.error("Failed to fix admin password", e);
+            return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "error", e.getMessage(),
+                    "type", e.getClass().getSimpleName()
+            ));
+        }
     }
 }
 

@@ -19,6 +19,8 @@ public interface NotificationRepository {
 
     void markAsRead(UUID notificationId, UUID userId);
 
+    boolean isRead(UUID notificationId, UUID userId);
+
     int countUnread(UUID userId);
 
     List<Notification> findScheduledNotifications(Instant now);

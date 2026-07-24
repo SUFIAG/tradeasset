@@ -200,9 +200,9 @@ public class SwiftMT700Generator {
         }
         appendMultiLineField(swift, "46A", docsRequired.toString());
 
-        // 47A: Additional Conditions
-        if (lc.getAdditionalConditions() != null) {
-            appendMultiLineField(swift, "47A", lc.getAdditionalConditions());
+        // 47A: Special Instructions
+        if (lc.getSpecialInstructions() != null) {
+            appendMultiLineField(swift, "47A", lc.getSpecialInstructions());
         }
 
         // 71B: Charges

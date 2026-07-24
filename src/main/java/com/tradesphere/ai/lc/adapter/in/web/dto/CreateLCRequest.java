@@ -35,6 +35,11 @@ public class CreateLCRequest {
     @NotNull(message = "LC amount is required")
     @DecimalMin(value = "0.01", message = "LC amount must be positive")
     private BigDecimal lcAmount;
+    
+    // Accept 'amount' as an alias for lcAmount from frontend
+    public void setAmount(BigDecimal amount) {
+        this.lcAmount = amount;
+    }
 
     @NotBlank(message = "Currency is required")
     @Size(min = 3, max = 3, message = "Currency must be 3 characters (ISO code)")

@@ -17,7 +17,7 @@ public class WorkflowMapper {
         entity.setId(workflow.getId().getValue());
         entity.setTenantId(workflow.getTenantId());
         entity.setType(workflow.getType());
-        entity.setWorkflowName(workflow.getWorkflowName());
+        entity.setWorkflowNumber(workflow.getWorkflowNumber());
         entity.setDescription(workflow.getDescription());
         entity.setEntityType(workflow.getEntityType());
         entity.setEntityId(workflow.getEntityId());
@@ -60,7 +60,7 @@ public class WorkflowMapper {
             // Set fields using reflection
             setField(workflow, "tenantId", entity.getTenantId());
             setField(workflow, "type", entity.getType());
-            setField(workflow, "workflowName", entity.getWorkflowName());
+            setField(workflow, "workflowNumber", entity.getWorkflowNumber());
             setField(workflow, "description", entity.getDescription());
             setField(workflow, "entityType", entity.getEntityType());
             setField(workflow, "entityId", entity.getEntityId());

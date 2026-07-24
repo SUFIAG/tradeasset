@@ -80,8 +80,7 @@ public class LCMapper {
         entity.setInsuranceCertificateRequired(lc.isInsuranceCertificateRequired());
         
         entity.setSpecialInstructions(lc.getSpecialInstructions());
-        entity.setAdditionalConditions(lc.getAdditionalConditions());
-        
+
         entity.setSubmittedBy(lc.getSubmittedBy());
         entity.setSubmittedAt(lc.getSubmittedAt());
         entity.setApprovedBy(lc.getApprovedBy());
@@ -107,7 +106,8 @@ public class LCMapper {
     }
     
     public LetterOfCredit toDomainModel(LCJpaEntity entity) {
-        return LetterOfCredit.builder()
+        // Build base LC with required fields
+        LetterOfCredit lc = LetterOfCredit.builder()
                 .id(LCId.from(entity.getId()))
                 .lcNumber(entity.getLcNumber() != null ? LCNumber.from(entity.getLcNumber()) : null)
                 .lcType(entity.getLcType())
@@ -122,6 +122,70 @@ public class LCMapper {
                 .createdBy(entity.getCreatedBy())
                 .version(entity.getVersion())
                 .build();
+
+        // Set additional fields directly
+        lc.setApplicantAddress(entity.getApplicantAddress());
+        lc.setBeneficiaryAddress(entity.getBeneficiaryAddress());
+
+        lc.setIssuingBankId(entity.getIssuingBankId());
+        lc.setAdvisingBankId(entity.getAdvisingBankId());
+        lc.setConfirmingBankId(entity.getConfirmingBankId());
+
+        lc.setTolerance(entity.getTolerance());
+        lc.setAvailableAmount(entity.getAvailableAmountValue() != null ?
+            Money.of(entity.getAvailableAmountValue(), entity.getAvailableAmountCurrency()) : null);
+        lc.setCurrency(entity.getCurrency());
+
+        lc.setApplicationDate(entity.getApplicationDate());
+        lc.setIssueDate(entity.getIssueDate());
+        lc.setLastShipmentDate(entity.getLastShipmentDate());
+        lc.setPresentationDate(entity.getPresentationDate());
+
+        lc.setIncoterm(entity.getIncoterm());
+        lc.setPortOfLoading(entity.getPortOfLoading());
+        lc.setPortOfDischarge(entity.getPortOfDischarge());
+        lc.setPlaceOfDestination(entity.getPlaceOfDestination());
+        lc.setPartialShipmentAllowed(entity.getPartialShipmentAllowed());
+        lc.setTransshipmentAllowed(entity.getTransshipmentAllowed());
+
+        lc.setGoodsDescription(entity.getGoodsDescription());
+        lc.setHsCode(entity.getHsCode());
+        lc.setQuantity(entity.getQuantity());
+        lc.setQuantityUnit(entity.getQuantityUnit());
+
+        lc.setCreditLimitReserved(entity.getCreditLimitReservedValue() != null ?
+            Money.of(entity.getCreditLimitReservedValue(), entity.getCreditLimitReservedCurrency()) : null);
+        lc.setCreditLimitApproved(entity.getCreditLimitApproved());
+
+        lc.setDocumentsRequired(entity.getDocumentsRequired());
+        lc.setCommercialInvoiceRequired(entity.getCommercialInvoiceRequired());
+        lc.setBillOfLadingRequired(entity.getBillOfLadingRequired());
+        lc.setPackingListRequired(entity.getPackingListRequired());
+        lc.setCertificateOfOriginRequired(entity.getCertificateOfOriginRequired());
+        lc.setInsuranceCertificateRequired(entity.getInsuranceCertificateRequired());
+
+        lc.setSpecialInstructions(entity.getSpecialInstructions());
+
+        lc.setSubmittedBy(entity.getSubmittedBy());
+        lc.setSubmittedAt(entity.getSubmittedAt());
+        lc.setApprovedBy(entity.getApprovedBy());
+        lc.setApprovedAt(entity.getApprovedAt());
+        lc.setRejectedBy(entity.getRejectedBy());
+        lc.setRejectedAt(entity.getRejectedAt());
+        lc.setRejectionReason(entity.getRejectionReason());
+
+        lc.setSwiftMessage(entity.getSwiftMessage());
+        lc.setSwiftSentAt(entity.getSwiftSentAt());
+
+        lc.setComplianceCheckPassed(entity.getComplianceCheckPassed());
+        lc.setSanctionsCheckPassed(entity.getSanctionsCheckPassed());
+        lc.setRiskRating(entity.getRiskRating());
+
+        lc.setUpdatedBy(entity.getUpdatedBy());
+        lc.setCreatedAt(entity.getCreatedAt() != null ? entity.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
+        lc.setUpdatedAt(entity.getUpdatedAt() != null ? entity.getUpdatedAt().toInstant(ZoneOffset.UTC) : null);
+
+        return lc;
     }
 }
 

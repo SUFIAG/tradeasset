@@ -51,7 +51,7 @@ public class SwiftIntegrationService {
         fields.put("59", lcData.beneficiary());
         fields.put("45A", lcData.goodsDescription());
         fields.put("46A", lcData.documentsRequired());
-        fields.put("47A", lcData.additionalConditions());
+        fields.put("47A", lcData.specialInstructions());
 
         SwiftMessage message = new SwiftMessage(
             "MT700",
@@ -204,7 +204,7 @@ public class SwiftIntegrationService {
         String beneficiary,
         String goodsDescription,
         String documentsRequired,
-        String additionalConditions,
+        String specialInstructions,
         String issuingBank,
         String advisingBank
     ) {}

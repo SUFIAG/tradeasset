@@ -16,6 +16,21 @@ public enum LCType {
     USANCE,
     
     /**
+     * Deferred Payment LC - Payment deferred to a specific date
+     */
+    DEFERRED_PAYMENT,
+
+    /**
+     * Acceptance LC - Bank accepts a time draft
+     */
+    ACCEPTANCE,
+
+    /**
+     * Negotiation LC - Nominated bank negotiates documents
+     */
+    NEGOTIATION,
+
+    /**
      * Confirmed LC - Additional guarantee from another bank
      */
     CONFIRMED,

@@ -22,7 +22,7 @@ public class WorkflowResponse {
     
     private UUID id;
     private WorkflowType type;
-    private String workflowName;
+    private String workflowNumber;
     private String entityType;
     private UUID entityId;
     private WorkflowStatus status;
@@ -46,7 +46,7 @@ public class WorkflowResponse {
         return WorkflowResponse.builder()
                 .id(workflow.getId().getValue())
                 .type(workflow.getType())
-                .workflowName(workflow.getWorkflowName())
+                .workflowNumber(workflow.getWorkflowNumber())
                 .entityType(workflow.getEntityType())
                 .entityId(workflow.getEntityId())
                 .status(workflow.getStatus())

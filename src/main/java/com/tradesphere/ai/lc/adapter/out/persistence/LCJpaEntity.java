@@ -163,8 +163,6 @@ public class LCJpaEntity {
     @Column(name = "special_instructions", columnDefinition = "TEXT")
     private String specialInstructions;
 
-    @Column(name = "additional_conditions", columnDefinition = "TEXT")
-    private String additionalConditions;
 
     @Column(name = "submitted_by")
     private UUID submittedBy;

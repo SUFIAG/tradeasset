@@ -6,6 +6,11 @@ package com.tradesphere.ai.workflow.domain.model;
 public enum TaskStatus {
     
     /**
+     * Task pending - waiting to be assigned
+     */
+    PENDING,
+
+    /**
      * Task created but not assigned
      */
     CREATED,
@@ -41,7 +46,7 @@ public enum TaskStatus {
     ESCALATED;
     
     public boolean isActive() {
-        return this == ASSIGNED || this == IN_PROGRESS || this == ESCALATED;
+        return this == PENDING || this == ASSIGNED || this == IN_PROGRESS || this == ESCALATED;
     }
     
     public boolean isTerminal() {

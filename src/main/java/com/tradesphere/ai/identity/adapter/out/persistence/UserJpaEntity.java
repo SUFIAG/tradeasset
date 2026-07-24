@@ -55,7 +55,7 @@ public class UserJpaEntity {
     private Instant lastLoginAt;
 
     @ElementCollection
-    @CollectionTable(name = "user_roles", schema = "identity",
+    @CollectionTable(name = "user_roles",
                      joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_id")
     @Builder.Default

@@ -120,6 +120,11 @@ public class DefaultNotificationService implements NotificationService {
     }
 
     @Override
+    public boolean isRead(UUID notificationId, UUID userId) {
+        return notificationRepository.isRead(notificationId, userId);
+    }
+
+    @Override
     public int getUnreadCount(UUID userId) {
         return notificationRepository.countUnread(userId);
     }

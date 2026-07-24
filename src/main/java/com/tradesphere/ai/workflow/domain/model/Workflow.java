@@ -36,7 +36,7 @@ public class Workflow extends AggregateRoot<WorkflowId> {
     // Workflow Definition
     private UUID tenantId;
     private WorkflowType type;
-    private String workflowName;
+    private String workflowNumber;
     private String description;
     private TaskPriority priority;
 
@@ -99,7 +99,7 @@ public class Workflow extends AggregateRoot<WorkflowId> {
         Workflow workflow = new Workflow(WorkflowId.generate());
         workflow.tenantId = tenantId;
         workflow.type = type;
-        workflow.workflowName = type.name();
+        workflow.workflowNumber = type.name();
         workflow.entityType = entityType;
         workflow.entityId = entityId;
         workflow.status = WorkflowStatus.PENDING;

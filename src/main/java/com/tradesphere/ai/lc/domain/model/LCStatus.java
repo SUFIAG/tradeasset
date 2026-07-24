@@ -16,6 +16,11 @@ public enum LCStatus {
     SUBMITTED,
     
     /**
+     * LC pending approval
+     */
+    PENDING_APPROVAL,
+
+    /**
      * LC is under review
      */
     UNDER_REVIEW,
@@ -45,6 +50,16 @@ public enum LCStatus {
      */
     ISSUED,
     
+    /**
+     * LC is active and in use
+     */
+    ACTIVE,
+
+    /**
+     * Documents submitted by beneficiary
+     */
+    DOCUMENTS_SUBMITTED,
+
     /**
      * Documents received and under review
      */

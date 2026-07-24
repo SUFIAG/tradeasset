@@ -120,6 +120,12 @@ public class InMemoryNotificationRepository implements NotificationRepository {
     }
 
     @Override
+    public boolean isRead(UUID notificationId, UUID userId) {
+        Set<UUID> readByUser = readNotifications.getOrDefault(userId, Collections.emptySet());
+        return readByUser.contains(notificationId);
+    }
+
+    @Override
     public int countUnread(UUID userId) {
         Set<UUID> allNotifications = userNotifications.getOrDefault(userId, Collections.emptySet());
         Set<UUID> readByUser = readNotifications.getOrDefault(userId, Collections.emptySet());

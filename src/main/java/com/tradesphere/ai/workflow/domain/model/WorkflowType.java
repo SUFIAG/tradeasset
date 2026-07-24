@@ -7,6 +7,11 @@ package com.tradesphere.ai.workflow.domain.model;
 public enum WorkflowType {
     
     /**
+     * Customer onboarding workflow
+     */
+    CUSTOMER_ONBOARDING,
+    
+    /**
      * Customer approval workflow
      */
     CUSTOMER_APPROVAL,
@@ -51,7 +56,7 @@ public enum WorkflowType {
      */
     public int getDefaultApprovalLevels() {
         return switch (this) {
-            case CUSTOMER_APPROVAL, CREDIT_LIMIT_APPROVAL -> 3; // Junior, Senior, Manager
+            case CUSTOMER_ONBOARDING, CUSTOMER_APPROVAL, CREDIT_LIMIT_APPROVAL -> 3; // Junior, Senior, Manager
             case LC_APPROVAL, LC_AMENDMENT -> 4; // Ops, Credit, Compliance, Manager
             case PAYMENT_AUTHORIZATION -> 2; // Ops, Manager
             case DOCUMENT_VERIFICATION -> 1; // Ops

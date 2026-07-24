@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  * Value Object representing LC Number
- * Format: LC-YYYY-NNNNNN (e.g., LC-2026-000001)
+ * Format: LC-YYYY-NNNNNN (e.g., LC-2026-000001) or LCYYYYNNNNNN (e.g., LC20260000001)
  */
 public record LCNumber(String value) implements ValueObject, Serializable {
     
@@ -14,8 +14,9 @@ public record LCNumber(String value) implements ValueObject, Serializable {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("LC Number cannot be null or empty");
         }
-        if (!value.matches("^LC-\\d{4}-\\d{6}$")) {
-            throw new IllegalArgumentException("Invalid LC Number format. Expected: LC-YYYY-NNNNNN");
+        // Accept both formats: LC-YYYY-NNNNNN or LCYYYYNNNNNN
+        if (!value.matches("^LC-?\\d{4}-?\\d{6}$")) {
+            throw new IllegalArgumentException("Invalid LC Number format. Expected: LC-YYYY-NNNNNN or LCYYYYNNNNNN");
         }
     }
     

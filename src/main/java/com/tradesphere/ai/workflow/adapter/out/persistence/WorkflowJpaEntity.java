@@ -33,9 +33,9 @@ public class WorkflowJpaEntity {
     @Column(name = "type", nullable = false)
     private WorkflowType type;
     
-    @Column(name = "workflow_name", nullable = false)
-    private String workflowName;
-    
+    @Column(name = "workflow_number", nullable = false)
+    private String workflowNumber;
+
     @Column(name = "description", length = 1000)
     private String description;
     
