@@ -1,0 +1,40 @@
+export {
+  LCListPage,
+  BankGuaranteesPage,
+  CollectionsPage,
+  ScfPage,
+  CustomersPage,
+  CompliancePage,
+  RiskPage,
+  DocumentsPage,
+  ShipmentsPage,
+  AnalyticsPage,
+  WorkflowsPage,
+  KnowledgePage,
+  SettingsPage,
+} from './ModulePages';
+export { ModuleListPage } from './ModuleListPage';
+export { ModuleCreatePage } from './ModuleCreatePage';
+export {
+  LCCreatePage,
+  LCDraftsPage,
+  BGCreatePage,
+  BGExpiringPage,
+  ScfCreatePage,
+  ScfPendingPage,
+  CollectionCreatePage,
+  CustomerCreatePage,
+  CustomerPendingKycPage,
+  ComplianceChecksPage,
+  ComplianceAlertsPage,
+  RiskHighPage,
+  AnalyticsReportsPage,
+  AnalyticsExportPage,
+  CopilotPage,
+  ProfilePage,
+  SecurityPage,
+  NotificationsPage,
+  HelpPage,
+  DEFAULT_NOTIFICATIONS,
+} from './ExtraPages';
+export type { NotificationItem } from './ExtraPages';

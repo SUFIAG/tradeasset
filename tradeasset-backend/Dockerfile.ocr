@@ -1,0 +1,73 @@
+# Multi-stage Dockerfile with Tesseract OCR support
+# Stage 1: Build stage
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# Stage 2: Runtime stage with Tesseract
+FROM eclipse-temurin:17-jre-jammy
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    # Tesseract OCR and language packs
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-fra \
+    tesseract-ocr-deu \
+    tesseract-ocr-spa \
+    tesseract-ocr-ara \
+    tesseract-ocr-chi-sim \
+    # Image processing tools
+    imagemagick \
+    ghostscript \
+    libpng-dev \
+    libjpeg-dev \
+    libtiff-dev \
+    # PDF processing
+    poppler-utils \
+    # System utilities
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure ImageMagick to allow PDF processing
+RUN sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml
+
+# Create tessdata directory for custom training data
+RUN mkdir -p /usr/share/tessdata-custom
+
+# Set environment variables
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+ENV JAVA_OPTS="-Xms512m -Xmx2048m -XX:+UseG1GC"
+ENV SPRING_PROFILES_ACTIVE=prod
+
+# Copy the built JAR from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Create non-root user for security
+RUN groupadd -r tradesphere && useradd -r -g tradesphere tradesphere
+RUN chown -R tradesphere:tradesphere /app
+USER tradesphere
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+# Expose port
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+
