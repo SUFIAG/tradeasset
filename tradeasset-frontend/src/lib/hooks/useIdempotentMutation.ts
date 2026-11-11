@@ -27,7 +27,7 @@ export interface IdempotentContext {
 }
 
 export interface UseIdempotentMutationOptions<TData, TVariables>
-  extends Omit<UseMutationOptions<TData, ApiError, TVariables>, 'mutationFn'> {
+  extends Omit<UseMutationOptions<TData, ApiError, TVariables>, 'mutationFn' | 'scope'> {
   /** Unique per form or per (record, action), e.g. `lc:create` or `lc:123:APPROVE`. */
   scope: string;
   mutationFn: (variables: TVariables, context: IdempotentContext) => Promise<TData>;
