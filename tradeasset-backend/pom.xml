@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -33,7 +33,8 @@
 		<archunit.version>1.3.0</archunit.version>
 		<testcontainers.version>1.19.8</testcontainers.version>
 		<lombok.version>1.18.32</lombok.version>
-		<jjwt.version>0.12.3</jjwt.version>
+		<jjwt.version>0.12.5</jjwt.version>
+		<build.dir>${project.basedir}/target</build.dir>
 	</properties>
 	<dependencies>
 		<!-- Spring Boot Starters -->
@@ -322,6 +323,7 @@
 	</repositories>
 
 	<build>
+		<directory>${build.dir}</directory>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -361,6 +363,8 @@
 					</annotationProcessorPaths>
 					<compilerArgs>
 						<arg>-parameters</arg>
+						<arg>-Xmaxerrs</arg>
+						<arg>10000</arg>
 					</compilerArgs>
 				</configuration>
 			</plugin>

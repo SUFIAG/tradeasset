@@ -1,0 +1,298 @@
+/*
+ * TradeAsset design tokens — "Trade ledger of the Gulf".
+ *
+ * Layer 1: primitives (raw palette, never used directly by components).
+ * Layer 2: semantic tokens (what components use), switched by [data-theme].
+ * Layer 3: script tokens, switched by [dir] / [lang] for Arabic typography.
+ *
+ * Contrast: every text/background pair below targets WCAG 2.1 AA (4.5:1 body, 3:1 large/UI).
+ */
+
+:root {
+  /* ---------- Primitives: indigo ink ---------- */
+  --ink-990: #070a17;
+  --ink-950: #0b0f1f;
+  --ink-900: #111733;
+  --ink-850: #161d3f;
+  --ink-800: #1b2348;
+  --ink-700: #262f5e;
+  --ink-600: #36407a;
+  --ink-500: #4c5696;
+  --ink-400: #6f78b3;
+  --ink-300: #9ca3cc;
+  --ink-200: #c3c8e3;
+  --ink-100: #e1e4f2;
+
+  /* ---------- Primitives: sand paper ---------- */
+  --sand-25: #fdfbf6;
+  --sand-50: #faf6ed;
+  --sand-100: #f4ede0;
+  --sand-150: #eee4d2;
+  --sand-200: #e6d9c0;
+  --sand-300: #d6c4a2;
+  --sand-500: #9c8862;
+  --sand-600: #75653f;
+  --sand-700: #5c4f33;
+  --sand-800: #3f3624;
+
+  /* ---------- Primitives: brass / saffron ---------- */
+  --brass-200: #f3dcae;
+  --brass-300: #ebc57d;
+  --brass-400: #dcaa4a;
+  --brass-500: #c48e26;
+  --brass-600: #9e6f14;
+  --brass-700: #7a540b;
+  --brass-800: #5a3e08;
+
+  /* ---------- Primitives: teal (positive) ---------- */
+  --teal-200: #b7e6dd;
+  --teal-300: #7fd0c1;
+  --teal-400: #3fb3a0;
+  --teal-600: #14786a;
+  --teal-700: #0d5e53;
+  --teal-900: #0b3530;
+
+  /* ---------- Primitives: coral (risk) ---------- */
+  --coral-200: #f8cbc0;
+  --coral-300: #f3a593;
+  --coral-400: #ec7a61;
+  --coral-600: #b5402a;
+  --coral-700: #93321f;
+  --coral-900: #4a1a10;
+
+  /* ---------- Primitives: amber (warning) and sky (info) ---------- */
+  --amber-300: #f2c46b;
+  --amber-700: #865c00;
+  --amber-900: #3d2b05;
+  --sky-300: #9cc3f0;
+  --sky-700: #2a5d99;
+  --sky-900: #13294a;
+
+  /* ---------- Typography ---------- */
+  --font-display: 'Fraunces Variable', 'Noto Naskh Arabic', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-num: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+
+  --text-2xs: 0.6875rem; /* 11 */
+  --text-xs: 0.75rem; /* 12 */
+  --text-sm: 0.8125rem; /* 13 */
+  --text-md: 0.875rem; /* 14 — base for data-dense screens */
+  --text-lg: 1rem; /* 16 */
+  --text-xl: 1.25rem; /* 20 */
+  --text-2xl: 1.625rem; /* 26 */
+  --text-3xl: 2.125rem; /* 34 */
+  --text-4xl: 2.875rem; /* 46 */
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  --tracking-caps: 0.08em;
+
+  /* ---------- Space (4px grid) ---------- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ---------- Shape ---------- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-pill: 999px;
+
+  /* ---------- Motion ---------- */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  /* ---------- Layout ---------- */
+  --sidebar-width: 15.5rem;
+  --sidebar-width-collapsed: 4.25rem;
+  --topbar-height: 3.5rem;
+  --copilot-width: 24rem;
+  --content-max: 96rem;
+  --control-height-sm: 1.875rem;
+  --control-height: 2.375rem;
+  --control-height-lg: 2.875rem;
+
+  /* ---------- Layering ---------- */
+  --z-sticky: 10;
+  --z-shell: 20;
+  --z-popover: 40;
+  --z-drawer: 50;
+  --z-toast: 70;
+
+  /* ---------- Geometric motif ----------
+   * An eight-point star lattice (khatam) drawn as a 40px tile. Used as a CSS mask so the
+   * stroke colour follows the theme via --pattern-ink. */
+  --pattern-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23000' stroke-width='0.9'%3E%3Cpath d='M20 6 34 20 20 34 6 20Z'/%3E%3Cpath d='M10 10h20v20H10Z'/%3E%3Cpath d='M0 0l10 10M40 0 30 10M0 40l10-10M40 40 30 30M20 0v6M20 34v6M0 20h6M34 20h6'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ======================================================================
+ * Light theme — sand paper, ink type, brass accent.
+ * ====================================================================== */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  --color-canvas: var(--sand-50);
+  --color-surface: var(--sand-25);
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: var(--sand-100);
+  --color-surface-hover: var(--sand-100);
+  --color-surface-selected: #f6ead0;
+  --color-rule: var(--sand-200);
+  --color-rule-strong: var(--sand-300);
+  --color-rule-ledger: #e9dcc3;
+
+  --color-text: var(--ink-900);
+  --color-text-muted: #4f4a3d;
+  --color-text-subtle: #6b6350;
+  --color-text-inverse: var(--sand-50);
+  --color-heading: var(--ink-950);
+
+  --color-primary: var(--ink-900);
+  --color-primary-hover: var(--ink-700);
+  --color-primary-text: var(--sand-50);
+
+  --color-accent: var(--brass-500);
+  --color-accent-hover: var(--brass-400);
+  --color-accent-text: var(--brass-700);
+  --color-accent-contrast: var(--ink-950);
+  --color-accent-soft: #f6e6c2;
+
+  --color-positive: var(--teal-700);
+  --color-positive-soft: #dcf1ec;
+  --color-positive-strong: var(--teal-600);
+  --color-risk: var(--coral-700);
+  --color-risk-soft: #fbe3dc;
+  --color-risk-strong: var(--coral-600);
+  --color-warning: var(--amber-700);
+  --color-warning-soft: #fbefd2;
+  --color-info: var(--sky-700);
+  --color-info-soft: #e1ecf9;
+  --color-neutral: #4f4a3d;
+  --color-neutral-soft: var(--sand-150);
+
+  --color-focus: var(--brass-600);
+  --focus-ring: 0 0 0 2px var(--color-surface-raised), 0 0 0 4px var(--color-focus);
+
+  --color-overlay: rgb(11 15 31 / 0.48);
+  --shadow-sm: 0 1px 0 rgb(63 54 36 / 0.06), 0 1px 2px rgb(63 54 36 / 0.08);
+  --shadow-md: 0 2px 4px rgb(63 54 36 / 0.06), 0 8px 24px rgb(17 23 51 / 0.1);
+  --shadow-lg: 0 12px 48px rgb(17 23 51 / 0.22);
+
+  /* Shell (sidebar + login art) stays ink in both themes. */
+  --shell-bg: var(--ink-900);
+  --shell-bg-deep: var(--ink-950);
+  --shell-text: #e9e4d6;
+  --shell-text-muted: #a9adc9;
+  --shell-rule: rgb(233 228 214 / 0.1);
+  --shell-hover: rgb(233 228 214 / 0.06);
+  --shell-active: rgb(220 170 74 / 0.14);
+  --shell-accent: var(--brass-300);
+
+  --pattern-ink: var(--sand-600);
+  --pattern-opacity: 0.07;
+  --pattern-shell-ink: var(--brass-300);
+  --pattern-shell-opacity: 0.07;
+
+  --skeleton-base: var(--sand-150);
+  --skeleton-shine: var(--sand-50);
+}
+
+/* ======================================================================
+ * Dark theme — deep indigo ink, sand type, brass glints.
+ * ====================================================================== */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-canvas: var(--ink-950);
+  --color-surface: var(--ink-900);
+  --color-surface-raised: var(--ink-850);
+  --color-surface-sunken: var(--ink-990);
+  --color-surface-hover: var(--ink-800);
+  --color-surface-selected: #2a2a3f;
+  --color-rule: #262c50;
+  --color-rule-strong: #353d6a;
+  --color-rule-ledger: #20264a;
+
+  --color-text: #ece6d6;
+  --color-text-muted: #b9b6c4;
+  --color-text-subtle: #9a9db8;
+  --color-text-inverse: var(--ink-950);
+  --color-heading: #f7f1e3;
+
+  --color-primary: var(--brass-400);
+  --color-primary-hover: var(--brass-300);
+  --color-primary-text: var(--ink-950);
+
+  --color-accent: var(--brass-400);
+  --color-accent-hover: var(--brass-300);
+  --color-accent-text: var(--brass-300);
+  --color-accent-contrast: var(--ink-950);
+  --color-accent-soft: rgb(220 170 74 / 0.14);
+
+  --color-positive: var(--teal-300);
+  --color-positive-soft: rgb(63 179 160 / 0.16);
+  --color-positive-strong: var(--teal-400);
+  --color-risk: var(--coral-300);
+  --color-risk-soft: rgb(236 122 97 / 0.16);
+  --color-risk-strong: var(--coral-400);
+  --color-warning: var(--amber-300);
+  --color-warning-soft: rgb(242 196 107 / 0.14);
+  --color-info: var(--sky-300);
+  --color-info-soft: rgb(156 195 240 / 0.14);
+  --color-neutral: #b9b6c4;
+  --color-neutral-soft: rgb(185 182 196 / 0.12);
+
+  --color-focus: var(--brass-300);
+  --focus-ring: 0 0 0 2px var(--color-canvas), 0 0 0 4px var(--color-focus);
+
+  --color-overlay: rgb(3 5 12 / 0.66);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 8px 24px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 16px 56px rgb(0 0 0 / 0.55);
+
+  --shell-bg: var(--ink-990);
+  --shell-bg-deep: #04060f;
+  --shell-rule: rgb(233 228 214 / 0.08);
+
+  --pattern-ink: var(--brass-300);
+  --pattern-opacity: 0.045;
+  --pattern-shell-opacity: 0.06;
+
+  --skeleton-base: var(--ink-800);
+  --skeleton-shine: var(--ink-700);
+}
+
+/* ======================================================================
+ * Arabic script: naskh display, Plex Sans Arabic for UI. Slightly larger
+ * line height, no letter-spacing (it breaks Arabic joining).
+ * ====================================================================== */
+[dir='rtl'] {
+  --font-display: 'Noto Naskh Arabic', 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'IBM Plex Sans Arabic', 'IBM Plex Sans', system-ui, sans-serif;
+  --leading-normal: 1.7;
+  --leading-snug: 1.5;
+  --tracking-caps: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}
